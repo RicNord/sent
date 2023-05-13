@@ -99,12 +99,12 @@ static void load(FILE *fp);
 static void advance(const Arg *arg);
 static void quit(const Arg *arg);
 static void resize(int width, int height);
-static void run(void);
-static void usage(void);
-static void xdraw(void);
-static void xhints(void);
-static void xinit(void);
-static void xloadfonts(void);
+static void run();
+static void usage();
+static void xdraw();
+static void xhints();
+static void xinit();
+static void xloadfonts();
 
 static void bpress(XEvent *);
 static void cmessage(XEvent *);
@@ -216,7 +216,8 @@ ffload(Slide *s)
 	s->img->bufwidth = ntohl(*(uint32_t *)&hdr[8]);
 	s->img->bufheight = ntohl(*(uint32_t *)&hdr[12]);
 
-	free(s->img->buf);
+	if (s->img->buf)
+		free(s->img->buf);
 	/* internally the image is stored in 888 format */
 	s->img->buf = ecalloc(s->img->bufwidth * s->img->bufheight, strlen("888"));
 
@@ -498,7 +499,7 @@ resize(int width, int height)
 }
 
 void
-run(void)
+run()
 {
 	XEvent ev;
 
@@ -520,7 +521,7 @@ run(void)
 }
 
 void
-xdraw(void)
+xdraw()
 {
 	unsigned int height, width, i;
 	Image *im = slides[idx].img;
@@ -548,7 +549,7 @@ xdraw(void)
 }
 
 void
-xhints(void)
+xhints()
 {
 	XClassHint class = {.res_name = "sent", .res_class = "presenter"};
 	XWMHints wm = {.flags = InputHint, .input = True};
@@ -566,7 +567,7 @@ xhints(void)
 }
 
 void
-xinit(void)
+xinit()
 {
 	XTextProperty prop;
 	unsigned int i;
@@ -610,7 +611,7 @@ xinit(void)
 }
 
 void
-xloadfonts(void)
+xloadfonts()
 {
 	int i, j;
 	char *fstrs[LEN(fontfallbacks)];
@@ -629,7 +630,8 @@ xloadfonts(void)
 	}
 
 	for (j = 0; j < LEN(fontfallbacks); j++)
-		free(fstrs[j]);
+		if (fstrs[j])
+			free(fstrs[j]);
 }
 
 void
@@ -678,7 +680,7 @@ configure(XEvent *e)
 }
 
 void
-usage(void)
+usage()
 {
 	die("usage: %s [file]", argv0);
 }
